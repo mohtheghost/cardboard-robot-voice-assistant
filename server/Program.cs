@@ -75,8 +75,11 @@ static class Config
     public static readonly string SttLanguage = Env("ROBOT_LANGUAGE", "en");
     public static readonly string TtsVoice = Env("ROBOT_TTS_VOICE", "echo");
 
-    // Server settings
+    // Server settings. ROBOT_BIND "+" = all interfaces (needs a URL reservation on Windows:
+    // netsh http add urlacl url=http://+:8080/ user=Everyone); "localhost" needs nothing but only
+    // accepts connections from this machine (handy for testing on Windows).
     public static readonly int ServerPort = int.TryParse(Env("ROBOT_PORT", "8080"), out var p) ? p : 8080;
+    public static readonly string BindHost = Env("ROBOT_BIND", "+");
     public const string TranscriptionsFolder = "transcriptions";
 }
 
@@ -862,10 +865,25 @@ class Program
 
         // Start HTTP listener
         var listener = new HttpListener();
-        listener.Prefixes.Add($"http://+:{Config.ServerPort}/");
-        listener.Start();
+        string prefix = $"http://{Config.BindHost}:{Config.ServerPort}/";
+        listener.Prefixes.Add(prefix);
+        try
+        {
+            listener.Start();
+        }
+        catch (HttpListenerException ex)
+        {
+            Console.WriteLine($"❌ Cannot listen on {prefix}: {ex.Message}");
+            if (OperatingSystem.IsWindows() && Config.BindHost == "+")
+            {
+                Console.WriteLine("   On Windows, listening on all interfaces needs a one-time URL reservation (run as Administrator):");
+                Console.WriteLine($"     netsh http add urlacl url=http://+:{Config.ServerPort}/ user=Everyone");
+                Console.WriteLine("   or, for a local test only, set ROBOT_BIND=localhost");
+            }
+            Environment.Exit(1);
+        }
 
-        Console.WriteLine($"🚀 Server listening on port {Config.ServerPort}");
+        Console.WriteLine($"🚀 Server listening on {prefix}");
         Console.WriteLine("📡 Waiting for ESP32 to connect...");
         Console.WriteLine();
 

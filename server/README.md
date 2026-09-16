@@ -21,6 +21,7 @@ commented).
 | `OPENAI_API_KEY` | **yes** | - | The server refuses to start without it. |
 | `ROBOT_AUTH_TOKEN` | strongly recommended on a public VPS | empty = accept anyone | Shared secret the ESP32 sends when it registers (`ROBOT_AUTH_TOKEN` in the firmware's `secrets.h`). Without it, anyone who finds the port can burn your OpenAI credit. **Only the experimental firmware sends it**; with the main firmware leave it unset and firewall the port instead. |
 | `ROBOT_PORT` | no | `8080` | WebSocket port. |
+| `ROBOT_BIND` | no | `+` (all interfaces) | Set to `localhost` for a test on your own PC only (no admin rights needed on Windows). The robot can only reach the server when this is `+`. |
 | `ROBOT_WAKE_WORDS` | no | `assistant,hello,robot` | Comma-separated. The transcribed sentence must contain one of them, the word is then removed and the rest is sent to ChatGPT. |
 | `ROBOT_LANGUAGE` | no | `en` | Whisper language hint (`ar` for Arabic, etc.). Also update the system prompt in `GetChatResponseAsync` if you change language. |
 | `ROBOT_TTS_VOICE` | no | `echo` | One of `alloy, echo, fable, onyx, nova, shimmer`. |
@@ -49,7 +50,8 @@ These variables last for the current terminal only. To make them permanent use
 `export` lines to `~/.bashrc` on Linux/macOS.
 
 Then put your PC's LAN IP in the firmware's `secrets.h` (`VPS_HOST`). On Windows
-`HttpListener` may need the URL reserved once (run as Administrator):
+listening on all interfaces needs the URL reserved once (run as Administrator;
+the server prints this command if it is missing):
 
 ```powershell
 netsh http add urlacl url=http://+:8080/ user=Everyone
