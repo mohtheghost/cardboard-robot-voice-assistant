@@ -132,6 +132,11 @@ are back at 8 kHz in the published code. `ESP32_Speaker_Test_Beep.ino`
 
 ### The server
 
+The server always ran on a rented Linux virtual machine: a small **Hostinger
+KVM VPS** in Frankfurt, reachable from the robot over any WiFi or phone hotspot
+(a .NET 8 console program started over SSH, later meant to run as a service;
+the systemd unit in `server/deploy/` is the published version of that setup).
+
 Only the final server survived. Clues to its past: the project's root namespace
 is still `RelayServerDebug`, a debug log left in the build output (not published)
 showed three launches of a relay server at 2 AM on Mar 30, and 49 firmware files

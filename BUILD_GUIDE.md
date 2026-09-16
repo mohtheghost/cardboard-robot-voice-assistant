@@ -330,7 +330,9 @@ with the lid open before you decorate.
 On your PC you started the server with `dotnet run`: it compiles the code every
 time and runs in the foreground of that window, which is right for testing but
 stops when the window closes. To use the robot without your PC, put the server on
-a small Linux VPS (any provider; the original ran on a cheap Hostinger KVM). The
+a small Linux VPS. The original robot's server ran on a cheap **Hostinger KVM
+VPS** (Ubuntu) and that is what the recipe was written for, but any provider
+with a Linux machine and a public address works. The
 recipe in [`server/README.md`](server/README.md), section *Deploy on a Linux
 VPS*, compiles the server once with `dotnet publish` and installs it as a
 service that starts at boot and restarts itself. Follow it exactly, then:

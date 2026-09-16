@@ -56,7 +56,9 @@ flowchart LR
 - **Server** (`server/`, .NET 8, one file): a WebSocket listener with a
   self-calibrating voice-activity detector. Each detected sentence is written to a
   WAV file, transcribed, checked for a wake word, answered, spoken, and streamed
-  back in 2 KB chunks.
+  back in 2 KB chunks. It ran on a small **Hostinger KVM VPS** (Ubuntu, Frankfurt
+  data centre) so the robot works from any WiFi or phone hotspot; any small Linux
+  VPS, or your own PC on the same network, works the same way.
 - **Protocol**: plain JSON over one WebSocket, described in
   [`docs/protocol.md`](docs/protocol.md).
 
