@@ -1,0 +1,32 @@
+# ---- Build outputs (regenerate with `dotnet build`) ----
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# ---- Secrets: never commit these ----
+firmware/**/secrets.h
+server/.env
+.env
+*.env
+
+# ---- Server runtime files (written next to the executable while it runs) ----
+server/recording_*.wav
+server/transcriptions/
+server/temp_tts_*
+server/*.log
+
+# ---- Arduino IDE build cache ----
+firmware/**/build/
+
+# ---- Original full-size photos and videos (kept locally; web-sized copies live in docs/) ----
+media/
+
+# ---- Local tool settings ----
+.claude/settings.local.json
+
+# ---- OS noise ----
+.DS_Store
+Thumbs.db
+desktop.ini

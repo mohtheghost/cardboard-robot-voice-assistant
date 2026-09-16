@@ -1,0 +1,29 @@
+[Unit]
+Description=Cardboard robot voice assistant server (ESP32 <-> OpenAI bridge)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Create the user once:  sudo useradd -r -s /usr/sbin/nologin -d /opt/robot-server robot
+User=robot
+WorkingDirectory=/opt/robot-server
+ExecStart=/opt/robot-server/server
+Restart=on-failure
+RestartSec=5
+
+# --- secrets and settings: edit these, then `sudo chmod 600` this file ---
+Environment=OPENAI_API_KEY=sk-REPLACE-ME
+Environment=ROBOT_AUTH_TOKEN=REPLACE-WITH-A-LONG-RANDOM-STRING
+Environment=ROBOT_PORT=8080
+Environment=ROBOT_WAKE_WORDS=assistant,hello,robot
+Environment=ROBOT_LANGUAGE=en
+Environment=ROBOT_TTS_VOICE=echo
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# Console output goes to journalctl -u robot-server
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
