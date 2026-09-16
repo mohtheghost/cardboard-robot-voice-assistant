@@ -7,7 +7,7 @@ sofa feeds the whole thing through the ESP32's micro-USB port.
 
 | Front | Back panel (speaker hole) | Inside the chest |
 |---|---|---|
-| ![front](images/img_6795.jpg) | ![back](images/img_6799.jpg) | ![inside](images/img_6810.jpg) |
+| ![front](images/robot-front.jpg) | ![back](images/back-panel-speaker-hole.jpg) | ![inside](images/chest-inside.jpg) |
 
 ## Bill of materials
 
@@ -87,8 +87,8 @@ WebSocket error.
 
 | | | |
 |---|---|---|
-| ![](images/img_6801.jpg) | ![](images/img_6798.jpg) | ![](images/img_6800.jpg) |
-| ![](images/img_6819.jpg) mic module and ESP32 | ![](images/img_6813.jpg) amplifier board | ![](images/img_6816.jpg) speaker behind the back panel |
-| ![](images/img_6817.jpg) mic inside the arm | ![](images/img_6811.jpg) ESP32 DevKit V1 | ![](images/img_6815.jpg) wiring loom |
-| ![](images/img_6797.jpg) face close-up | ![](images/img_6796.jpg) head from above, toothpick antennae | ![](images/img_6812.jpg) ESP32 and the power wires |
-| ![](images/img_6814.jpg) wiring close-up | ![](images/img_6818.jpg) ESP32 and amplifier wiring overview | |
+| ![](images/robot-front-powerbank.jpg) | ![](images/robot-back.jpg) | ![](images/robot-side.jpg) |
+| ![](images/mic-module-and-esp32.jpg) mic module and ESP32 | ![](images/amplifier-board.jpg) amplifier board | ![](images/speaker-behind-back-panel.jpg) speaker behind the back panel |
+| ![](images/mic-inside-arm.jpg) mic inside the arm | ![](images/esp32-devkit.jpg) ESP32 DevKit V1 | ![](images/amplifier-and-esp32.jpg) amplifier and ESP32 wiring |
+| ![](images/face-closeup.jpg) face close-up | ![](images/head-top-antennae.jpg) head from above, toothpick antennae | ![](images/esp32-power-wires.jpg) ESP32 and the power wires |
+| ![](images/wiring-closeup.jpg) wiring close-up | ![](images/esp32-and-amp-overview.jpg) ESP32 and amplifier wiring overview | |

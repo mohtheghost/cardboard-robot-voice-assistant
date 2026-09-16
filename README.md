@@ -7,9 +7,9 @@ word, asks ChatGPT for a short answer, turns it into speech (OpenAI TTS) and
 streams the audio back to the robot.
 
 <p align="center">
-  <img src="docs/images/img_6795.jpg" width="32%" alt="The robot from the front">
+  <img src="docs/images/robot-front.jpg" width="32%" alt="The robot from the front">
   <img src="docs/media/demo.gif" width="32%" alt="Demo clip">
-  <img src="docs/images/img_6810.jpg" width="32%" alt="Electronics inside the chest">
+  <img src="docs/images/chest-inside.jpg" width="32%" alt="Electronics inside the chest">
 </p>
 
 Say **"hello robot, tell me a joke"** and:
@@ -80,7 +80,7 @@ docs/
   images/, media/          web-sized photos, demo clip
 experiments/whisper-test/  the very first experiment: send a WAV to Whisper
 archive/
-  firmware-versions/       all 61 prototype .ino files (credentials removed)
+  firmware-versions/       all 60 prototype .ino files (credentials removed)
   server-original/         the April server exactly as it ran (key removed)
   README.md                dated index of every archived version
 media/                     original photos and videos (git-ignored, large)

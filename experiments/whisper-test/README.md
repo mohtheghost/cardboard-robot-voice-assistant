@@ -5,7 +5,7 @@ The very first experiment of the project, one week before the server existed: a
 transcription. The `TranscribeAsync` method in the server is a near-verbatim copy
 of it. It already used the `OPENAI_API_KEY` environment variable.
 
-The project was created with Visual Studio's default name "7" (hence `7.csproj`).
+The project was created with Visual Studio's default name "7" (the project file was renamed to `whisper-test.csproj`; the namespace inside is still `_7`).
 The `.csproj` references the `OpenAI` and `Newtonsoft.Json` packages from an
 earlier text-to-speech test whose code did not survive; the current code uses
 neither.
