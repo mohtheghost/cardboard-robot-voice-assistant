@@ -124,8 +124,10 @@ jitter logic again the same evening.
 `ESP32_STREAMING_8KHZ_1.ino` (Apr 1) added what a teacher's feedback asked for:
 the microphone is muted from the wake beep until the answer has played, and three
 quick beeps tell you the server stopped listening. **The firmware on the robot
-today is this file with the sample rate back at 16 kHz and the volume gain at
-3.0**; it lives in `firmware/esp32_voice_assistant/`. `ESP32_Speaker_Test_Beep.ino`
+today is this file with the volume gain at 3.0**; it lives in
+`firmware/esp32_voice_assistant/`. It briefly ran at 16 kHz to match the April
+server, but 8 kHz is what streams without stutter on a hotspot, so both sides
+are back at 8 kHz in the published code. `ESP32_Speaker_Test_Beep.ino`
 (Apr 5) is a fresh stand-alone speaker test extracted from the same beep code.
 
 ### The server

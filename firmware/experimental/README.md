@@ -18,7 +18,7 @@ What it changes (each one is marked in the source with a comment):
 | Test beep off by default and blocked while an answer is in flight | It could slip in between two chunks of speech. |
 | Reboots on WiFi timeout instead of halting | Power banks and hotspots are often not ready at boot. |
 | Mic JSON is `{"type":"audio","data":...}` (no `target:"pc"`); buffer sized from the header constant | The PC relay is gone; the old fixed size 38 was the exact length of the old string. |
-| All "8 kHz" strings print the real sample rate | The rate is 16 kHz. |
+| All rate strings print `AUDIO_SAMPLE_RATE` instead of a hard-coded "8kHz" | Stays correct if the rate is changed. |
 
 How to test it: flash it exactly like the main firmware (copy `secrets.h.example`
 to `secrets.h` in this folder), start the server, and check in the serial monitor

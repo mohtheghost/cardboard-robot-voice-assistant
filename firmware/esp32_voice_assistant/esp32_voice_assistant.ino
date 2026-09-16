@@ -1,13 +1,14 @@
 /*
  * ESP32 CARDBOARD ROBOT - VOICE ASSISTANT FIRMWARE (the version that runs on the robot)
  *
- * This is the working firmware exactly as it was last flashed (April 2026 code base,
- * sample rate raised to 16 kHz to match the server). The only edit made for
- * publication is that the WiFi/server credentials moved to secrets.h.
- * Note: several log strings and banners below still say "8kHz" from an older
- * build; the real rate is AUDIO_SAMPLE_RATE (16000). One comment still mentions
- * a "PC": that was the relay-era architecture, the C# server sends the frames now.
- * Both are harmless leftovers, kept so this file stays identical to what was tested.
+ * This is the working firmware exactly as it was last flashed (April 2026 code base).
+ * The only edits made for publication: the WiFi/server credentials moved to
+ * secrets.h, and AUDIO_SAMPLE_RATE is 8000 again (the server defaults to 8 kHz too).
+ * 8 kHz is deliberate: it halves the bandwidth and stopped the answer from
+ * stuttering on a mobile hotspot. Both sides must use the same rate.
+ * One comment below still mentions a "PC": that was the relay-era architecture, the
+ * C# server sends the frames now. It is a harmless leftover, kept so the code stays
+ * identical to what was tested.
  *
  * What it does:
  *   - reads the INMP441 I2S microphone (I2S_NUM_0: SCK 25, WS 27, SD 18)
@@ -64,7 +65,7 @@
 #define I2S_SPK_SERIAL_DATA   13
 
 // Audio
-#define AUDIO_SAMPLE_RATE     16000
+#define AUDIO_SAMPLE_RATE     8000
 #define MIC_I2S_BITS          32
 #define SPK_I2S_BITS          16
 #define MIC_GAIN_MULTIPLIER   1.5f

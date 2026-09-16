@@ -27,7 +27,7 @@
 #define MIC_SD   18
 
 // Audio - must match Config.SampleRate in the server
-#define SAMPLE_RATE 16000
+#define SAMPLE_RATE 8000
 #define AUDIO_GAIN  1.5f
 
 // Microphone config

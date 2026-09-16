@@ -2,7 +2,7 @@
 
 | Sketch | Purpose |
 |---|---|
-| [`esp32_voice_assistant/`](esp32_voice_assistant/) | **The firmware running on the robot.** Streams the mic to the server, plays the answer, beeps for feedback. Unchanged from the tested April code except that credentials moved to `secrets.h`; its log lines still say "8kHz" although it runs at 16 kHz. |
+| [`esp32_voice_assistant/`](esp32_voice_assistant/) | **The firmware running on the robot.** Streams the mic to the server, plays the answer, beeps for feedback. Unchanged from the tested April code except that credentials moved to `secrets.h` and the rate is 8 kHz again. |
 | [`experimental/esp32_voice_assistant_next/`](experimental/esp32_voice_assistant_next/) | The same firmware with review fixes (auth token, mic un-mute safety net, cleaner end of answer). Compiles cleanly, not yet tested on hardware. See [`experimental/README.md`](experimental/README.md). |
 | [`hardware_tests/speaker_beep_test/`](hardware_tests/speaker_beep_test/) | No WiFi. Beeps through the MAX98357A so you can check the speaker wiring. |
 | [`hardware_tests/mic_stream_test/`](hardware_tests/mic_stream_test/) | Streams the INMP441 to the server and nothing else. Watch the server's VAD bar to check the mic. Needs its own `secrets.h` (copy the example in that folder). |
@@ -27,8 +27,7 @@
    must also stay unset on the server (the experimental firmware is the one that
    uses it). `secrets.h` is git-ignored.
 2. Open `esp32_voice_assistant/esp32_voice_assistant.ino`, click Upload.
-3. Open the Serial Monitor at **115200 baud**. A healthy boot looks like this
-   (the "8kHz" wording is a leftover string; the firmware runs at 16 kHz):
+3. Open the Serial Monitor at **115200 baud**. A healthy boot looks like this:
 
 ```
 [SPK] ✅ Speaker ready at 8kHz (optimized for mobile)
@@ -59,7 +58,7 @@ sketch folder needs its `secrets.h` first.
 
 | Define | Default | Effect |
 |---|---|---|
-| `AUDIO_SAMPLE_RATE` | 16000 | Must match `Config.SampleRate` in the server. 8000 halves the bandwidth on a weak hotspot (the server must be changed too). |
+| `AUDIO_SAMPLE_RATE` | 8000 | Must match `ROBOT_SAMPLE_RATE` on the server (default 8000). 16000 sounds clearer but stuttered on a phone hotspot; if you raise it, raise the server too. |
 | `MIC_GAIN_MULTIPLIER` | 1.5 | Mic loudness sent to the server. |
 | `SPK_VOLUME_GAIN` | 3.0 | Software volume of the answer (clipped at full scale). |
 | `BEEP_ENABLED` | true (main), false (experimental) | A faint 800 Hz beep every 2 s, useful while checking wiring. The main firmware has it on, as it was flashed. |

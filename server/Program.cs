@@ -19,18 +19,18 @@ using System.Threading.Tasks;
 //  Architecture: ESP32 <-> this server (runs on a VPS or on your PC)
 //
 //  Pipeline for every sentence the robot hears:
-//    ESP32 mic audio (16 kHz PCM16, base64 in JSON over WebSocket)
+//    ESP32 mic audio (8 kHz PCM16 by default, base64 in JSON over WebSocket)
 //      -> Voice Activity Detection (dynamic threshold, calibrated at startup)
 //      -> WAV file -> OpenAI Whisper (speech-to-text)
 //      -> wake-word check ("assistant", "hello", "robot")
 //      -> ChatGPT (gpt-4o-mini, short answers)
-//      -> OpenAI TTS (mp3) -> ffmpeg -> 16 kHz PCM16
+//      -> OpenAI TTS (mp3) -> ffmpeg -> PCM16 at the same rate
 //      -> streamed back to the ESP32 in 2 KB chunks
 //
 //  Feedback messages to the ESP32: wake_beep, speech_ended, listen
 //
 //  Configuration comes from environment variables (see README.md):
-//    OPENAI_API_KEY (required), ROBOT_PORT, ROBOT_AUTH_TOKEN,
+//    OPENAI_API_KEY (required), ROBOT_PORT, ROBOT_AUTH_TOKEN, ROBOT_SAMPLE_RATE,
 //    ROBOT_WAKE_WORDS, ROBOT_TTS_VOICE, ROBOT_LANGUAGE, ROBOT_KEEP_RECORDINGS
 // ═══════════════════════════════════════════════════════════════
 
@@ -53,8 +53,9 @@ static class Config
     // Keep recording_*.wav files after transcription (default: delete them)
     public static readonly bool KeepRecordings = Env("ROBOT_KEEP_RECORDINGS", "0") == "1";
 
-    // Audio settings (must match ESP32)
-    public const int SampleRate = 16000;
+    // Audio settings (must match the firmware's AUDIO_SAMPLE_RATE). 8 kHz halves the bandwidth
+    // and avoids stuttering answers on a weak WiFi/hotspot; 16000 sounds clearer.
+    public static readonly int SampleRate = int.TryParse(Env("ROBOT_SAMPLE_RATE", "8000"), out var sr) ? sr : 8000;
     public const int Channels = 1;
     public const int BitsPerSample = 16;
 
@@ -100,7 +101,7 @@ class VoiceActivityDetector
 
     // Real-time monitoring
     private int _chunkCounter = 0;
-    private const int LogEveryNChunks = 10; // Show VAD every 10 chunks (~1 s: 1536 samples per chunk at 16 kHz)
+    private const int LogEveryNChunks = 10; // Show VAD every 10 chunks (1536 samples per chunk: ~2 s at 8 kHz, ~1 s at 16 kHz)
 
     public event Action? OnSpeechStarted;
     public event Action? OnSpeechEnded;

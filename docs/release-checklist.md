@@ -34,7 +34,7 @@ who forks it and wants to publish their own copy.
 | No way to run the server as a service | `server/deploy/robot-server.service` + `server/README.md` |
 | Hardware tests scattered among prototypes | `firmware/hardware_tests/` (speaker beep, microphone stream) |
 | 240 MB of originals with location metadata | `media/` (ignored) + stripped, web-sized copies in `docs/` |
-| Stale "8 kHz" comments everywhere | Fixed in the server and the experimental firmware; documented in the main firmware header |
+| Sample rate mismatched between comments and code | 8 kHz on both sides again (the configuration that streamed without stutter); server rate configurable with `ROBOT_SAMPLE_RATE` |
 | Build outputs (`bin/`, `obj/`, `.vs/`) with secrets inside | `.gitignore` |
 
 ## Code fixes applied to the server (compile-verified, defaults unchanged)
@@ -80,7 +80,15 @@ still needs a test on the real robot before it can replace the main firmware.
 - A WiFi timeout at boot halts the board forever instead of retrying.
 - `SPK_VOLUME_GAIN 3.0` clips loud parts of the answer; lowering it and raising
   the amplifier's GAIN pin would sound cleaner.
-- The 8 kHz strings in logs and banners are stale (the rate is 16 kHz).
+
+## Not yet re-tested with a real key
+
+The server was refactored for publication and smoke-tested with a simulated
+robot (registration, voice detection, beep messages, error handling), but the
+OpenAI calls and the complete question-to-answer chain have not been re-run with
+a real API key on the physical robot since the refactor. Do that first when you
+pick the project up again; the April server is in `archive/server-original/` if
+anything needs comparing.
 
 ## Nice to have later
 

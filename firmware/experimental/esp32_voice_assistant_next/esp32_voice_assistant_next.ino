@@ -28,7 +28,9 @@
  *   MAX98357A amp -> I2S_NUM_1 : BCLK GPIO12, LRC GPIO14, DIN GPIO13, VIN 5V
  *   Status LED    -> GPIO2 (on-board LED): ON = not connected, OFF = connected
  *
- * Audio format: 16 kHz, 16-bit, mono PCM in both directions (base64 inside JSON).
+ * Audio format: 8 kHz, 16-bit, mono PCM in both directions (base64 inside JSON).
+ * 8 kHz halves the bandwidth and avoids stuttering answers on a mobile hotspot;
+ * AUDIO_SAMPLE_RATE must equal the server's rate (ROBOT_SAMPLE_RATE, default 8000).
  *
  * Feedback beeps:
  *   - 1 beep       : the server recognised the wake word and is answering
@@ -86,7 +88,7 @@
 #define I2S_SPK_SERIAL_DATA   13
 
 // Audio
-#define AUDIO_SAMPLE_RATE     16000
+#define AUDIO_SAMPLE_RATE     8000
 #define MIC_I2S_BITS          32
 #define SPK_I2S_BITS          16
 #define MIC_GAIN_MULTIPLIER   1.5f
@@ -672,7 +674,7 @@ void handleTtsAudioChunkParsed(int chunkNumber, int totalChunks,
   c.chunkNumber = chunkNumber;
   c.totalChunks = totalChunks;
 
-  // The speaker task frees one slot every 64 ms (2048 bytes at 16 kHz); 5 s means it is stuck.
+  // The speaker task frees one slot every 128 ms (2048 bytes at 8 kHz); 5 s means it is stuck.
   if (xQueueSend(spkPlayQueue, &c, pdMS_TO_TICKS(5000)) != pdTRUE) {
     free(decoded);
     Serial.println("[SPK] ERROR: enqueue failed (speaker task stuck?)");
@@ -725,7 +727,8 @@ void speakerPlaybackTaskFunction(void* parameter) {
       }
 
       if (c.chunkNumber + 1 >= c.totalChunks) {
-        vTaskDelay(pdMS_TO_TICKS(140));   // i2s_write returns before the DMA ring (~128 ms) has played
+        // i2s_write returns before the DMA ring has played: wait for its length (+10 ms) before zeroing it
+        vTaskDelay(pdMS_TO_TICKS((I2S_DMA_BUF_COUNT * I2S_DMA_BUF_LEN * 1000) / AUDIO_SAMPLE_RATE + 10));
         i2s_zero_dma_buffer(I2S_NUM_1);
         discardMicDma();                  // the mic ring holds the end of the answer: drop it
         Serial.println();

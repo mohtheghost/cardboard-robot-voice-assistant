@@ -10,7 +10,7 @@ commented).
 | Requirement | Why |
 |---|---|
 | .NET 8 SDK (or newer; change `TargetFramework` in `server.csproj` if you only have 9/10) | build and run |
-| `ffmpeg` on the `PATH` | converts the OpenAI TTS mp3 into raw 16 kHz PCM for the ESP32 |
+| `ffmpeg` on the `PATH` | converts the OpenAI TTS mp3 into raw 8 kHz PCM for the ESP32 |
 | **Your own** OpenAI API key, created at https://platform.openai.com/api-keys | Whisper (speech-to-text), gpt-4o-mini (answers), tts-1 (speech); usage is billed to your OpenAI account, roughly a few cents per question |
 | Port 8080 reachable from the robot | plain `ws://`, so use it on a LAN or a VPS you trust |
 
@@ -21,6 +21,7 @@ commented).
 | `OPENAI_API_KEY` | **yes** | - | The server refuses to start without it. |
 | `ROBOT_AUTH_TOKEN` | strongly recommended on a public VPS | empty = accept anyone | Shared secret the ESP32 sends when it registers (`ROBOT_AUTH_TOKEN` in the firmware's `secrets.h`). Without it, anyone who finds the port can burn your OpenAI credit. **Only the experimental firmware sends it**; with the main firmware leave it unset and firewall the port instead. |
 | `ROBOT_PORT` | no | `8080` | WebSocket port. |
+| `ROBOT_SAMPLE_RATE` | no | `8000` | Audio rate in Hz, must equal `AUDIO_SAMPLE_RATE` in the firmware. 8000 streams smoothly on a hotspot; 16000 sounds clearer but may stutter. |
 | `ROBOT_BIND` | no | `+` (all interfaces) | Set to `localhost` for a test on your own PC only (no admin rights needed on Windows). The robot can only reach the server when this is `+`. |
 | `ROBOT_WAKE_WORDS` | no | `assistant,hello,robot` | Comma-separated. The transcribed sentence must contain one of them, the word is then removed and the rest is sent to ChatGPT. |
 | `ROBOT_LANGUAGE` | no | `en` | Whisper language hint (`ar` for Arabic, etc.). Also update the system prompt in `GetChatResponseAsync` if you change language. |

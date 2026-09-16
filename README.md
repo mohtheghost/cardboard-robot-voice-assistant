@@ -21,12 +21,19 @@ Say **"hello robot, tell me a joke"** and:
 
 A 38-second demo video is in [`docs/media/demo.mp4`](docs/media/demo.mp4).
 
+> **Status (September 2026):** the robot and the pipeline worked end to end in
+> April 2026. Before publication the server was cleaned up (key from the
+> environment, safety fixes) and smoke-tested with a simulated robot, but the
+> OpenAI calls and the full chain have **not yet been re-tested with a real API
+> key on the robot**. If you build one, expect to spend a few minutes tuning
+> `VadNoiseOffset` and the speaker gain for your room and hardware.
+
 ## How it works
 
 ```mermaid
 flowchart LR
     subgraph Robot["Cardboard robot (ESP32)"]
-        MIC["INMP441 mic<br/>I2S port 0"] --> FW["Firmware<br/>16 kHz PCM → base64 JSON"]
+        MIC["INMP441 mic<br/>I2S port 0"] --> FW["Firmware<br/>8 kHz PCM → base64 JSON"]
         FW --> SPK["MAX98357A amp<br/>+ speaker, I2S port 1"]
     end
     FW <-->|"WebSocket ws://host:8080"| SRV
@@ -39,9 +46,13 @@ flowchart LR
     end
 ```
 
-- **Firmware** (`firmware/`, Arduino C++): reads the I2S microphone, batches 96 ms
+- **Firmware** (`firmware/`, Arduino C++): reads the I2S microphone, batches 192 ms
   of audio into one JSON message, plays incoming TTS chunks as they arrive, and
   beeps for feedback. Two FreeRTOS tasks keep the WebSocket responsive.
+- **Audio rate**: 8 kHz mono on both sides. That is on purpose: 16 kHz sounded
+  a little clearer but the answers stuttered on a phone hotspot; 8 kHz halves the
+  bandwidth and plays smoothly. Both sides must use the same rate
+  (`AUDIO_SAMPLE_RATE` in the firmware, `ROBOT_SAMPLE_RATE` on the server).
 - **Server** (`server/`, .NET 8, one file): a WebSocket listener with a
   self-calibrating voice-activity detector. Each detected sentence is written to a
   WAV file, transcribed, checked for a wake word, answered, spoken, and streamed
