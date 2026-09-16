@@ -5,25 +5,27 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-# Create the user once:  sudo useradd -r -s /usr/sbin/nologin -d /opt/robot-server robot
+# The unprivileged user the service runs as. Create it once (see server/README.md):
+#   sudo useradd -r -s /usr/sbin/nologin -d /opt/robot-server robot
 User=robot
 WorkingDirectory=/opt/robot-server
 ExecStart=/opt/robot-server/server
 Restart=on-failure
 RestartSec=5
 
-# --- secrets and settings: edit these, then `sudo chmod 600` this file ---
-# Your OWN OpenAI key from https://platform.openai.com/api-keys (usage is billed to you).
-# The server refuses to start while this is still the placeholder.
-Environment=OPENAI_API_KEY=sk-REPLACE-ME
-Environment=ROBOT_AUTH_TOKEN=REPLACE-WITH-A-LONG-RANDOM-STRING
-Environment=ROBOT_PORT=8080
-Environment=ROBOT_WAKE_WORDS=assistant,hello,robot
-Environment=ROBOT_LANGUAGE=en
-Environment=ROBOT_TTS_VOICE=echo
+# Secrets and settings live in a root-only file, one KEY=value per line, no quotes:
+#   sudo install -m 600 /dev/null /etc/robot-server.env
+#   sudo nano /etc/robot-server.env
+# containing at least:
+#   OPENAI_API_KEY=sk-...          <- your OWN key from https://platform.openai.com/api-keys (billed to you)
+# and only if you flash the experimental firmware (the tested firmware sends no token):
+#   ROBOT_AUTH_TOKEN=a-long-random-string
+# optional: ROBOT_PORT=8080  ROBOT_SAMPLE_RATE=8000  ROBOT_WAKE_WORDS=assistant,hello,robot
+#           ROBOT_LANGUAGE=en  ROBOT_TTS_VOICE=echo  ROBOT_KEEP_RECORDINGS=0
+EnvironmentFile=/etc/robot-server.env
 Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-# Console output goes to journalctl -u robot-server
+# Console output goes to: journalctl -u robot-server -f
 StandardOutput=journal
 StandardError=journal
 

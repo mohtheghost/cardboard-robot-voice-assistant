@@ -51,32 +51,86 @@ These variables last for the current terminal only. To make them permanent use
 `export` lines to `~/.bashrc` on Linux/macOS.
 
 Then put your PC's LAN IP in the firmware's `secrets.h` (`VPS_HOST`). On Windows
-listening on all interfaces needs the URL reserved once (run as Administrator;
-the server prints this command if it is missing):
+two one-time commands are needed in a PowerShell started *as Administrator*: the
+first lets a normal program use the port (the server prints it if it is missing),
+the second lets the robot reach the PC (Windows shows no firewall pop-up for this
+kind of server):
 
 ```powershell
 netsh http add urlacl url=http://+:8080/ user=Everyone
+netsh advfirewall firewall add rule name="Robot server 8080" dir=in action=allow protocol=TCP localport=8080
 ```
-
-and the Windows firewall must allow inbound TCP 8080.
 
 ## Deploy on a Linux VPS
 
+`dotnet run` (above) compiles on every start and stops when you log out. On a
+VPS the server is compiled once with `dotnet publish` and run by systemd, which
+starts it at boot and restarts it if it crashes. Tested layout: Ubuntu 22.04 or
+24.04; any small VPS works (the original ran on a cheap Hostinger KVM).
+
 ```bash
-sudo apt install -y ffmpeg dotnet-sdk-8.0        # Ubuntu 22.04+/Debian 12: see Microsoft's install page if the package is missing
-git clone <your repo> ~/robot && cd ~/robot/server
+# 1. tools (Debian and other distributions: add Microsoft's package feed first,
+#    see https://learn.microsoft.com/dotnet/core/install/linux, then the same apt line)
+sudo apt update && sudo apt install -y ffmpeg git dotnet-sdk-8.0
+dotnet --version                                    # must print a version
+
+# 2. code
+git clone https://github.com/mohtheghost/cardboard-robot-voice-assistant.git ~/robot
+cd ~/robot/server
+
+# 3. an unprivileged user and the install folder
+sudo useradd -r -s /usr/sbin/nologin -d /opt/robot-server robot
+sudo mkdir -p /opt/robot-server && sudo chown "$USER" /opt/robot-server
 dotnet publish -c Release -o /opt/robot-server
+sudo chown -R robot:robot /opt/robot-server
+
+# 4. secrets: root-only file, one KEY=value per line, no quotes
+sudo install -m 600 /dev/null /etc/robot-server.env
+sudo nano /etc/robot-server.env                      # OPENAI_API_KEY=sk-...   (+ ROBOT_AUTH_TOKEN=... only with the experimental firmware)
+
+# 5. service
 sudo cp deploy/robot-server.service /etc/systemd/system/
-sudo nano /etc/systemd/system/robot-server.service   # put your key and token in the Environment= lines
 sudo systemctl daemon-reload
 sudo systemctl enable --now robot-server
-sudo ufw allow 8080/tcp
-journalctl -u robot-server -f                         # live log
+journalctl -u robot-server -f                        # live log; Ctrl+C to leave it
 ```
 
+After changing the server code: `cd ~/robot && git pull`, then repeat the
+`dotnet publish` and `chown` lines and `sudo systemctl restart robot-server`.
+After changing `/etc/robot-server.env`: `sudo systemctl restart robot-server`.
+
+**Open the port, but not to everyone.** Two firewalls are involved: the
+provider's own firewall (a "security group" or "cloud firewall" in the provider's
+web panel) must allow inbound TCP 8080, and `ufw` on the machine must too. Pick
+the rule that matches your robot:
+
+- Robot on your home WiFi with the **tested firmware** (sends no token): find your
+  home's public address from a PC at home (`curl -4 ifconfig.me`) and allow only
+  it:
+
+  ```bash
+  sudo ufw allow OpenSSH                                       # first, or you lock yourself out
+  sudo ufw allow from <your-home-ip> to any port 8080 proto tcp
+  sudo ufw enable && sudo ufw status
+  ```
+
+  Home addresses change now and then; if the robot stops connecting, check the
+  address again. Leave `ROBOT_AUTH_TOKEN` out of the env file: the tested
+  firmware would be rejected.
+- Robot on a phone hotspot or anywhere else (its address changes constantly):
+  set `ROBOT_AUTH_TOKEN` in the env file and in the robot's `secrets.h`, flash
+  `firmware/experimental/esp32_voice_assistant_next` (the only main firmware that
+  sends the token), and open the port to everyone: `sudo ufw allow OpenSSH &&
+  sudo ufw allow 8080/tcp && sudo ufw enable`.
+
+Check from home before touching the robot: Windows
+`Test-NetConnection <vps-ip> -Port 8080` (TcpTestSucceeded : True), Linux/macOS
+`nc -zv <vps-ip> 8080`. If that fails while `sudo ss -ltnp | grep 8080` on the
+VPS shows the server listening, a firewall is in the way.
+
 The provided [`deploy/robot-server.service`](deploy/robot-server.service) runs the
-server as an unprivileged user in `/opt/robot-server`, restarts it if it crashes,
-and reads the secrets from the unit file (keep it `chmod 600`).
+server as the unprivileged `robot` user in `/opt/robot-server`, restarts it if it
+crashes, and reads the secrets from `/etc/robot-server.env` (root-only, mode 600).
 
 ## What you will see in the console
 

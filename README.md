@@ -88,12 +88,16 @@ media/                     original photos and videos (git-ignored, large)
 
 ## Build your own
 
+**New to ESP32? Start with [`BUILD_GUIDE.md`](BUILD_GUIDE.md)**: a step-by-step
+recipe from shopping list to first conversation, with a troubleshooting table.
+The short version:
+
 1. **Hardware**: an ESP32 DevKit, an INMP441 microphone, a MAX98357A amplifier, a
    small speaker and a power bank. Wiring tables and the parts list are in
    [`docs/hardware.md`](docs/hardware.md).
 2. **Server**: you need **your own OpenAI API key**. Create one at
-   https://platform.openai.com/api-keys (every question costs a fraction of a
-   cent for Whisper, gpt-4o-mini and TTS, billed to your account). Install .NET 8
+   https://platform.openai.com/api-keys (every question costs a few cents at most
+   for Whisper, gpt-4o-mini and TTS, billed to your account). Install .NET 8
    and `ffmpeg`, set `OPENAI_API_KEY`, run `dotnet run` in `server/`. Details and
    a VPS deployment recipe are in [`server/README.md`](server/README.md). (A
    `ROBOT_AUTH_TOKEN` can lock the server to your robot; it needs the
