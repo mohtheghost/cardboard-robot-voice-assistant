@@ -11,7 +11,7 @@ commented).
 |---|---|
 | .NET 8 SDK (or newer; change `TargetFramework` in `server.csproj` if you only have 9/10) | build and run |
 | `ffmpeg` on the `PATH` | converts the OpenAI TTS mp3 into raw 16 kHz PCM for the ESP32 |
-| An OpenAI API key with credit | Whisper (speech-to-text), gpt-4o-mini (answers), tts-1 (speech) |
+| **Your own** OpenAI API key, created at https://platform.openai.com/api-keys | Whisper (speech-to-text), gpt-4o-mini (answers), tts-1 (speech); usage is billed to your OpenAI account, roughly a few cents per question |
 | Port 8080 reachable from the robot | plain `ws://`, so use it on a LAN or a VPS you trust |
 
 ## Configuration (environment variables)
@@ -43,6 +43,10 @@ export ROBOT_AUTH_TOKEN=pick-a-long-random-string
 cd server
 dotnet run
 ```
+
+These variables last for the current terminal only. To make them permanent use
+`setx OPENAI_API_KEY "sk-..."` on Windows (then reopen the terminal) or add the
+`export` lines to `~/.bashrc` on Linux/macOS.
 
 Then put your PC's LAN IP in the firmware's `secrets.h` (`VPS_HOST`). On Windows
 `HttpListener` may need the URL reserved once (run as Administrator):

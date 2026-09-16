@@ -1,4 +1,12 @@
-﻿using System;
+﻿// ═══════════════════════════════════════════════════════════════
+//  ARCHIVED SNAPSHOT (April 7, 2026) - kept for reference only.
+//  The hard-coded OpenAI key that used to be on the OpenAiApiKey line was
+//  removed; "sk-REPLACE-ME" is a placeholder. Do not run this copy: use the
+//  maintained server in ../../server, which reads YOUR OWN key from the
+//  OPENAI_API_KEY environment variable. Comments below still say "8kHz"
+//  although SampleRate is 16000.
+// ═══════════════════════════════════════════════════════════════
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -5,7 +5,9 @@
  * sample rate raised to 16 kHz to match the server). The only edit made for
  * publication is that the WiFi/server credentials moved to secrets.h.
  * Note: several log strings and banners below still say "8kHz" from an older
- * build; the real rate is AUDIO_SAMPLE_RATE (16000). They are harmless.
+ * build; the real rate is AUDIO_SAMPLE_RATE (16000). One comment still mentions
+ * a "PC": that was the relay-era architecture, the C# server sends the frames now.
+ * Both are harmless leftovers, kept so this file stays identical to what was tested.
  *
  * What it does:
  *   - reads the INMP441 I2S microphone (I2S_NUM_0: SCK 25, WS 27, SD 18)

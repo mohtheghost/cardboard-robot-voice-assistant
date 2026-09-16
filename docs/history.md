@@ -131,8 +131,9 @@ today is this file with the sample rate back at 16 kHz and the volume gain at
 ### The server
 
 Only the final server survived. Clues to its past: the project's root namespace
-is still `RelayServerDebug`, a `relay-debug.log` shows three launches of a relay
-server at 2 AM on Mar 30, and 49 firmware files talk about "the PC". The
+is still `RelayServerDebug`, a debug log left in the build output (not published)
+showed three launches of a relay server at 2 AM on Mar 30, and 49 firmware files
+talk about "the PC". The
 unified server (Apr 7) took over the PC's job. Its comments still said "8 kHz"
 while it ran at 16 kHz; those comments are fixed in the current copy, and a
 scrubbed copy of the exact April file is in `archive/server-original/`.

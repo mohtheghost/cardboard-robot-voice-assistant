@@ -18,7 +18,7 @@
  *   - mic JSON no longer carries the stale target:"pc" field; 8 kHz strings fixed
  *
  * The robot listens through an INMP441 I2S microphone, streams the audio to a
- * small C# server (see ../../server) over a WebSocket, and plays the server's
+ * small C# server (server/ in the repository root) over a WebSocket, and plays the server's
  * spoken answer through a MAX98357A I2S amplifier. All the "brains"
  * (speech-to-text, wake-word check, ChatGPT, text-to-speech) live on the server;
  * this firmware only moves audio and plays feedback beeps.

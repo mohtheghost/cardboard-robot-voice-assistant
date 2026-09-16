@@ -1,48 +1,25 @@
-# Before you show it to the world
+# Release notes and checklist
 
-What was missing or dangerous in the original folder, what has been fixed
-during the clean-up, and what only you can do. Work through the **Must do**
-list before the first `git push`.
+What was missing when this project was tidied up for publication, what was
+changed, and what is still known to be rough. Also a short checklist for anyone
+who forks it and wants to publish their own copy.
 
-## Must do (only you can)
+## Before publishing your own copy
 
-1. **Rotate the OpenAI API key.** The old key was written as a constant in
-   `server/Program.cs`, is compiled into `server/bin/**/server.dll` and
-   `server/obj/**/server.dll`, and is indexed by Visual Studio in `server/.vs/`.
-   Treat it as leaked: create a new key at platform.openai.com and delete the old
-   one. The new server reads `OPENAI_API_KEY` from the environment.
-2. **Delete the build folders that still contain the old key and your test
-   recordings** (they are git-ignored, but a zip or a copy would include them):
-
-   ```powershell
-   Remove-Item -Recurse -Force server\bin, server\obj, server\.vs, experiments\whisper-test\bin, experiments\whisper-test\obj, experiments\whisper-test\.vs
-   ```
-
-   `experiments/whisper-test/bin` also holds `audio.wav`, `output.wav`,
-   `audio.pcm` and `tts_output.mp3`, recordings of your own voice. Copy them
-   somewhere first if you want to keep them.
-3. **Change your home WiFi password.** It sat in 58 firmware files that were
-   downloaded from and possibly uploaded to an AI chat. The files in `archive/`
-   now contain `YOUR_WIFI_PASSWORD` instead, and `secrets.h` is git-ignored.
-4. **Put your name in `LICENSE`** (replace `<YOUR NAME>`), or pick another
-   license.
-5. **Protect the server before you tell anyone its address.** Either set
-   `ROBOT_AUTH_TOKEN` on the server *and* flash the experimental firmware that
-   sends it, or restrict port 8080 in the VPS firewall to your home or hotspot
-   IP. Without one of these, anyone who finds the port can spend your OpenAI
-   credit. The server prints a warning at startup while the token is unset.
-6. **Keep `media/` out of the repository.** The original photos carry GPS EXIF
-   data and the two `.MOV` files contain the recording location; together they
-   are about 240 MB. `.gitignore` excludes `media/`; the re-encoded copies in
-   `docs/images` and `docs/media` have no metadata.
-7. **Create the repository:**
-
-   ```bash
-   git init
-   git add .
-   git status        # check that no bin/, obj/, .vs/, media/ or secrets.h is listed
-   git commit -m "Cardboard robot voice assistant"
-   ```
+1. **Never commit a key.** The server reads `OPENAI_API_KEY` from the
+   environment and refuses to start with a placeholder. If a real key ever
+   ended up in a file or a build folder, revoke it at platform.openai.com and
+   create a new one.
+2. **Delete build folders** (`bin/`, `obj/`, `.vs/`) before zipping or sharing
+   the tree any other way; Git already ignores them.
+3. **Keep `secrets.h` and full-size media out of Git.** Both are ignored; the
+   photos in `docs/images` are re-encoded copies without EXIF or GPS data.
+4. **Protect the server** before telling anyone its address: set
+   `ROBOT_AUTH_TOKEN` (requires the experimental firmware) or restrict the port in
+   the VPS firewall to your own IP.
+5. **Check `git status` before pushing**: no `secrets.h`, `bin/`, `obj/`,
+   `.vs/` or `media/` should be listed.
+6. Put the name you want on the MIT notice in `LICENSE`.
 
 ## What was missing and is now added
 
@@ -50,21 +27,23 @@ list before the first `git push`.
 |---|---|
 | No README, no docs, no license | `README.md`, `docs/hardware.md`, `docs/protocol.md`, `docs/history.md`, `LICENSE` (MIT) |
 | 61 firmware files in one folder, no way to know which one runs on the robot | `firmware/esp32_voice_assistant/` is the running code; everything else is in `archive/firmware-versions/` with an index |
-| The current firmware was not in the folder at all (only in a chat paste) | Saved as the main firmware |
-| WiFi name, password and VPS IP in every firmware file | `secrets.h` (git-ignored) + `secrets.h.example` |
-| OpenAI key hard-coded in the server | `OPENAI_API_KEY` environment variable; the server refuses to start without it |
+| The current firmware existed only in a chat paste | Saved as the main firmware |
+| WiFi name, password and server IP in every firmware file | `secrets.h` (git-ignored) + `secrets.h.example` |
+| OpenAI key hard-coded in the server | `OPENAI_API_KEY` environment variable; the server refuses to start without a real-looking key |
 | No authentication on the server | Optional `ROBOT_AUTH_TOKEN` (needs the experimental firmware) |
 | No way to run the server as a service | `server/deploy/robot-server.service` + `server/README.md` |
 | Hardware tests scattered among prototypes | `firmware/hardware_tests/` (speaker beep, microphone stream) |
 | 240 MB of originals with location metadata | `media/` (ignored) + stripped, web-sized copies in `docs/` |
 | Stale "8 kHz" comments everywhere | Fixed in the server and the experimental firmware; documented in the main firmware header |
-| Build outputs (`bin/`, `obj/`, `.vs/`) with secrets inside | `.gitignore` + item 2 above |
+| Build outputs (`bin/`, `obj/`, `.vs/`) with secrets inside | `.gitignore` |
 
-## Code fixes applied to the server (all compile-verified, defaults unchanged)
+## Code fixes applied to the server (compile-verified, defaults unchanged)
 
 - `OPENAI_API_KEY`, `ROBOT_PORT`, `ROBOT_WAKE_WORDS`, `ROBOT_LANGUAGE`,
   `ROBOT_TTS_VOICE`, `ROBOT_AUTH_TOKEN`, `ROBOT_KEEP_RECORDINGS` environment
   variables (same defaults as the April code).
+- Clear messages when the key is missing, a placeholder, rejected (HTTP 401) or
+  out of credit (HTTP 429).
 - One WebSocket send at a time (`.NET` throws if two `SendAsync` calls overlap;
   the "speech ended" beep and a running answer could collide).
 - Audio is ignored for 0.7 s after telling the robot to beep, so the robot's own
@@ -84,8 +63,8 @@ list before the first `git push`.
 
 These are documented, not fixed, in `firmware/esp32_voice_assistant/` because
 that file is the tested one. All of them are addressed in
-`firmware/experimental/esp32_voice_assistant_next/`, which still needs a test
-on the real robot before it can replace the main firmware.
+`firmware/experimental/esp32_voice_assistant_next/`, which compiles cleanly but
+still needs a test on the real robot before it can replace the main firmware.
 
 - If the wake word is heard but the server never sends an answer (empty command,
   API error), the microphone stays muted until the robot is power-cycled.

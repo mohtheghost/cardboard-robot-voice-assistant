@@ -7,22 +7,24 @@ using System.Threading.Tasks;
 
 class Program
 {
-    static async Task Main()
+    static async Task Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        // Read the API key from environment variable
+        // Read YOUR OpenAI API key from the environment (never put it in the code)
         string apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         if (string.IsNullOrEmpty(apiKey))
         {
-            Console.WriteLine("API key not set in environment.");
+            Console.WriteLine("OPENAI_API_KEY is not set. Create your own key at https://platform.openai.com/api-keys and run:");
+            Console.WriteLine("  Windows PowerShell:  $env:OPENAI_API_KEY = \"sk-...\"      Linux/macOS:  export OPENAI_API_KEY=sk-...");
             return;
         }
 
-        // Path to your WAV file
-        string filePath = @"C:\Users\moh the ghost\Desktop\7\bin\Debug\net9.0\audio.wav";
+        // Path to the WAV file: first command-line argument, or audio.wav in the current folder
+        string filePath = args.Length > 0 ? args[0] : "audio.wav";
         if (!File.Exists(filePath))
         {
-            Console.WriteLine("WAV file not found.");
+            Console.WriteLine($"WAV file not found: {filePath}");
+            Console.WriteLine("Usage: dotnet run -- path\\to\\recording.wav   (16 kHz mono WAV works best)");
             return;
         }
 

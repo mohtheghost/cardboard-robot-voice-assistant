@@ -13,6 +13,8 @@ Restart=on-failure
 RestartSec=5
 
 # --- secrets and settings: edit these, then `sudo chmod 600` this file ---
+# Your OWN OpenAI key from https://platform.openai.com/api-keys (usage is billed to you).
+# The server refuses to start while this is still the placeholder.
 Environment=OPENAI_API_KEY=sk-REPLACE-ME
 Environment=ROBOT_AUTH_TOKEN=REPLACE-WITH-A-LONG-RANDOM-STRING
 Environment=ROBOT_PORT=8080

@@ -10,6 +10,12 @@ The `.csproj` references the `OpenAI` and `Newtonsoft.Json` packages from an
 earlier text-to-speech test whose code did not survive; the current code uses
 neither.
 
-To run it: set `OPENAI_API_KEY`, edit the `filePath` line in `Program.cs` to point
-at a 16 kHz mono WAV, then `dotnet run`. It is kept only as a record of where the
-project started; the real code is in `../../server`.
+To run it: set `OPENAI_API_KEY` to your own key, then
+
+```bash
+dotnet run -- path/to/recording.wav
+```
+
+(16 kHz mono WAV works best; without an argument it looks for `audio.wav` in the
+current folder). It is kept only as a record of where the project started; the
+real code is in `../../server`.

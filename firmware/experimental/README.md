@@ -1,9 +1,10 @@
 # Experimental firmware
 
 `esp32_voice_assistant_next/` is the working firmware plus the fixes found in a
-code review. It has **not been flashed to the robot yet**. The main firmware in
+code review. It compiles (ESP32 core 3.3.7, one harmless deprecation warning) but has
+**not been flashed to the robot yet**. The main firmware in
 `../esp32_voice_assistant/` stays the tested reference until this one is
-verified.
+verified on the hardware.
 
 What it changes (each one is marked in the source with a comment):
 

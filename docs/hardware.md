@@ -90,3 +90,5 @@ WebSocket error.
 | ![](images/img_6801.jpg) | ![](images/img_6798.jpg) | ![](images/img_6800.jpg) |
 | ![](images/img_6819.jpg) mic module and ESP32 | ![](images/img_6813.jpg) amplifier board | ![](images/img_6816.jpg) speaker behind the back panel |
 | ![](images/img_6817.jpg) mic inside the arm | ![](images/img_6811.jpg) ESP32 DevKit V1 | ![](images/img_6815.jpg) wiring loom |
+| ![](images/img_6797.jpg) face close-up | ![](images/img_6796.jpg) head from above, toothpick antennae | ![](images/img_6812.jpg) ESP32 and the power wires |
+| ![](images/img_6814.jpg) wiring close-up | ![](images/img_6818.jpg) ESP32 and amplifier wiring overview | |

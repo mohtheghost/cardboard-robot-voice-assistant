@@ -235,6 +235,20 @@ class OpenAIClient
             new AuthenticationHeaderValue("Bearer", _apiKey);
     }
 
+    // Turn a failed OpenAI response into an exception whose message says what to check
+    private static async Task ThrowIfFailedAsync(HttpResponseMessage response, string what)
+    {
+        if (response.IsSuccessStatusCode) return;
+        string body = await response.Content.ReadAsStringAsync();
+        string hint = (int)response.StatusCode switch
+        {
+            401 => " -> check OPENAI_API_KEY: it must be your own valid key from https://platform.openai.com/api-keys",
+            429 => " -> rate limit or no credit left on your OpenAI account",
+            _ => ""
+        };
+        throw new HttpRequestException($"{what} failed with HTTP {(int)response.StatusCode}{hint}. Details: {body}");
+    }
+
     // Speech-to-Text (Whisper)
     public async Task<string?> TranscribeAsync(string wavFilePath)
     {
@@ -259,7 +273,7 @@ class OpenAIClient
                 "https://api.openai.com/v1/audio/transcriptions",
                 content);
 
-            response.EnsureSuccessStatusCode();
+            await ThrowIfFailedAsync(response, "Whisper");
             string transcription = (await response.Content.ReadAsStringAsync()).Trim();
 
             if (!string.IsNullOrEmpty(transcription))
@@ -302,7 +316,7 @@ class OpenAIClient
                 "https://api.openai.com/v1/chat/completions",
                 jsonContent);
 
-            response.EnsureSuccessStatusCode();
+            await ThrowIfFailedAsync(response, "ChatGPT");
             string result = await response.Content.ReadAsStringAsync();
             var doc = JsonDocument.Parse(result);
 
@@ -351,7 +365,7 @@ class OpenAIClient
                 "https://api.openai.com/v1/audio/speech",
                 jsonContent);
 
-            response.EnsureSuccessStatusCode();
+            await ThrowIfFailedAsync(response, "Text-to-speech");
             byte[] mp3Data = await response.Content.ReadAsByteArrayAsync();
 
             Log($"[TTS] ✅ Generated {mp3Data.Length / 1024}KB MP3");
@@ -821,9 +835,10 @@ class Program
         Console.WriteLine("╚════════════════════════════════════════════════════════════╝");
         Console.WriteLine();
 
-        if (string.IsNullOrWhiteSpace(Config.OpenAiApiKey))
+        if (string.IsNullOrWhiteSpace(Config.OpenAiApiKey) || Config.OpenAiApiKey == "sk-REPLACE-ME" || !Config.OpenAiApiKey.StartsWith("sk-"))
         {
-            Console.WriteLine("❌ OPENAI_API_KEY is not set. Export it and start again, e.g.");
+            Console.WriteLine("❌ OPENAI_API_KEY is missing or still a placeholder. This server uses YOUR OWN OpenAI key.");
+            Console.WriteLine("   Create one at https://platform.openai.com/api-keys (calls are billed to your OpenAI account), then:");
             Console.WriteLine("   Linux/macOS:  export OPENAI_API_KEY=sk-...   Windows: $env:OPENAI_API_KEY=\"sk-...\"");
             Environment.Exit(1);
         }

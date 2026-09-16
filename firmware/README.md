@@ -3,7 +3,7 @@
 | Sketch | Purpose |
 |---|---|
 | [`esp32_voice_assistant/`](esp32_voice_assistant/) | **The firmware running on the robot.** Streams the mic to the server, plays the answer, beeps for feedback. Unchanged from the tested April code except that credentials moved to `secrets.h`; its log lines still say "8kHz" although it runs at 16 kHz. |
-| [`experimental/esp32_voice_assistant_next/`](experimental/) | The same firmware with review fixes (auth token, mic un-mute safety net, cleaner end of answer). Not yet tested on hardware. |
+| [`experimental/esp32_voice_assistant_next/`](experimental/esp32_voice_assistant_next/) | The same firmware with review fixes (auth token, mic un-mute safety net, cleaner end of answer). Compiles cleanly, not yet tested on hardware. See [`experimental/README.md`](experimental/README.md). |
 | [`hardware_tests/speaker_beep_test/`](hardware_tests/speaker_beep_test/) | No WiFi. Beeps through the MAX98357A so you can check the speaker wiring. |
 | [`hardware_tests/mic_stream_test/`](hardware_tests/mic_stream_test/) | Streams the INMP441 to the server and nothing else. Watch the server's VAD bar to check the mic. Needs its own `secrets.h` (copy the example in that folder). |
 
@@ -22,20 +22,38 @@
 ## Flashing the voice assistant
 
 1. Copy `esp32_voice_assistant/secrets.h.example` to `esp32_voice_assistant/secrets.h`
-   and fill in your WiFi name/password, the server IP/port and the auth token.
-   `secrets.h` is git-ignored.
+   and fill in your WiFi name/password and the server IP/port. Leave
+   `ROBOT_AUTH_TOKEN` empty: this firmware does not send it, so `ROBOT_AUTH_TOKEN`
+   must also stay unset on the server (the experimental firmware is the one that
+   uses it). `secrets.h` is git-ignored.
 2. Open `esp32_voice_assistant/esp32_voice_assistant.ino`, click Upload.
-3. Open the Serial Monitor at **115200 baud**. A healthy boot looks like:
+3. Open the Serial Monitor at **115200 baud**. A healthy boot looks like this
+   (the "8kHz" wording is a leftover string; the firmware runs at 16 kHz):
 
 ```
-[SPK] ✅ Speaker ready (16000 Hz, 16-bit mono)
-[MIC] ✅ Microphone ready (16000 Hz, 32-bit I2S -> 16-bit PCM)
-[WiFi] ✅ Connected! IP=192.168.1.42
+[SPK] ✅ Speaker ready at 8kHz (optimized for mobile)
+[MIC] ✅ Microphone ready at 8kHz (optimized for mobile)
+[WiFi] ✅ Connected! IP=192.168.1.x
 [WS] ✅ CONNECTED: /
-[WS] ✅ ESP32 REGISTERED - streaming microphone at 16000 Hz
+[WS] ✅ ESP32 REGISTERED - Ready for 8kHz audio
 ```
 
 The blue LED turns **off** when the robot is registered with the server.
+
+## Compiling from the command line (optional)
+
+All four sketches compile with ESP32 core 3.3.7 and WebSockets 2.7.2 (checked
+with `arduino-cli` 1.5.1); the only warning is a harmless C++20 deprecation
+note about `++` on a `volatile` counter. With `arduino-cli` installed and the
+ESP32 core added, run from the repository root:
+
+```bash
+arduino-cli compile --fqbn esp32:esp32:esp32doit-devkit-v1 firmware/esp32_voice_assistant
+arduino-cli upload  --fqbn esp32:esp32:esp32doit-devkit-v1 -p COM3 firmware/esp32_voice_assistant
+```
+
+Replace `COM3` with your board's port (`arduino-cli board list` shows it). Each
+sketch folder needs its `secrets.h` first.
 
 ## Knobs you may want to turn (top of the .ino)
 

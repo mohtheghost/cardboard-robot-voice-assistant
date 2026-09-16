@@ -21,7 +21,8 @@ server/*.log
 firmware/**/build/
 
 # ---- Original full-size photos and videos (kept locally; web-sized copies live in docs/) ----
-media/
+# Anchored to the repo root on purpose: docs/media/ (demo clip) must stay tracked.
+/media/
 
 # ---- Local tool settings ----
 .claude/settings.local.json
